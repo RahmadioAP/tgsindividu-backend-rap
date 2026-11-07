@@ -1,0 +1,89 @@
+// Tempel ke https://dbdiagram.io (Import > atau editor DBML)
+Project posyandu {
+  database_type: 'PostgreSQL'
+}
+
+Table posyandu {
+  id serial [pk, increment]
+  nama varchar(100) [not null]
+  alamat text [not null]
+  desa varchar(100) [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table kader {
+  id serial [pk, increment]
+  posyandu_id int [not null, ref: > posyandu.id] // one to many
+  nama varchar(100) [not null]
+  no_hp varchar(20)
+  alamat text
+  jabatan varchar(50) [not null, default: 'Anggota']
+  status varchar(10) [not null, default: 'aktif', note: 'aktif | nonaktif']
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table akun_kader {
+  id serial [pk, increment]
+  kader_id int [not null, unique, ref: - kader.id] // one to one
+  username varchar(50) [not null, unique]
+  password_hash varchar(255) [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table peserta {
+  id serial [pk, increment]
+  posyandu_id int [not null, ref: > posyandu.id] // one to many
+  jenis_peserta varchar(10) [not null, note: 'ibu_hamil | balita']
+  nama varchar(100) [not null]
+  nik varchar(16) [unique]
+  tanggal_lahir date [not null]
+  jenis_kelamin char(1) [not null, note: 'L | P']
+  nama_ibu varchar(100)
+  alamat text
+  hpht date [note: 'khusus ibu hamil']
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table jenis_layanan {
+  id serial [pk, increment]
+  nama varchar(100) [not null, unique]
+  keterangan text
+}
+
+Table jadwal_kegiatan {
+  id serial [pk, increment]
+  posyandu_id int [not null, ref: > posyandu.id] // one to many
+  judul varchar(150) [not null]
+  tanggal date [not null]
+  jam_mulai time [not null]
+  lokasi varchar(150)
+  keterangan text
+}
+
+Table pemeriksaan {
+  id serial [pk, increment]
+  peserta_id int [not null, ref: > peserta.id] // one to many
+  kader_id int [not null, ref: > kader.id]     // one to many
+  tanggal_kunjungan date [not null, default: `CURRENT_DATE`]
+  berat_badan numeric(5,2) [not null, note: 'kg']
+  tinggi_badan numeric(5,2) [note: 'cm']
+  lingkar_kepala numeric(5,2) [note: 'cm, balita']
+  lila numeric(5,2) [note: 'cm, ibu hamil']
+  tekanan_darah varchar(10) [note: 'mis. 110/70']
+  catatan text
+  created_at timestamp [not null, default: `now()`]
+}
+
+// many to many: pemeriksaan <-> jenis_layanan
+Table pemeriksaan_layanan {
+  pemeriksaan_id int [not null, ref: > pemeriksaan.id]
+  layanan_id int [not null, ref: > jenis_layanan.id]
+  indexes { (pemeriksaan_id, layanan_id) [pk] }
+}
+
+// many to many: jadwal_kegiatan <-> kader
+Table jadwal_kader {
+  jadwal_id int [not null, ref: > jadwal_kegiatan.id]
+  kader_id int [not null, ref: > kader.id]
+  indexes { (jadwal_id, kader_id) [pk] }
+}

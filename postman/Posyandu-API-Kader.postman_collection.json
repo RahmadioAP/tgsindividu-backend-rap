@@ -1,0 +1,204 @@
+{
+  "info": {
+    "name": "Posyandu API - Kader",
+    "description": "Jalankan berurutan 1 -> 5 (Collection Runner). POST menyimpan id ke variabel kader_id yang dipakai request 3, 4, 5. Set variabel base_url ke http://localhost:8000.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "kader_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. POST - Tambah kader",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201 Created', () => pm.response.to.have.status(201));",
+              "const j = pm.response.json();",
+              "pm.test('success true', () => pm.expect(j.success).to.eql(true));",
+              "pm.test('data punya id', () => pm.expect(j.data.id).to.be.a('number'));",
+              "pm.collectionVariables.set('kader_id', j.data.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Membuat data baru dan menyimpannya ke database.",
+        "url": {
+          "raw": "{{base_url}}/api/kader",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "kader"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"posyandu_id\": 1,\n  \"nama\": \"Wulan Sari\",\n  \"no_hp\": \"081377788899\",\n  \"alamat\": \"RT 04 RW 03\",\n  \"jabatan\": \"Anggota\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "2. GET - Semua kader",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('data berupa array', () => pm.expect(j.data).to.be.an('array'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Mendapatkan semua data. Opsional ?nama=siti untuk pencarian.",
+        "url": {
+          "raw": "{{base_url}}/api/kader",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "kader"
+          ]
+        }
+      }
+    },
+    {
+      "name": "3. GET - Kader berdasarkan ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('id sesuai', () => pm.expect(pm.response.json().data.id).to.eql(Number(pm.collectionVariables.get('kader_id'))));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Mendapatkan data berdasarkan ID pada parameter URL.",
+        "url": {
+          "raw": "{{base_url}}/api/kader/{{kader_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "kader",
+            "{{kader_id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. PUT - Update kader",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('jabatan berubah', () => pm.expect(pm.response.json().data.jabatan).to.eql('Bendahara'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Memperbarui data berdasarkan ID.",
+        "url": {
+          "raw": "{{base_url}}/api/kader/{{kader_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "kader",
+            "{{kader_id}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"posyandu_id\": 1,\n  \"nama\": \"Wulan Sari\",\n  \"no_hp\": \"081377788899\",\n  \"alamat\": \"RT 04 RW 03\",\n  \"jabatan\": \"Bendahara\",\n  \"status\": \"aktif\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "5. DELETE - Hapus kader",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('pesan sukses', () => pm.expect(pm.response.json().message).to.include('dihapus'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "description": "Menghapus data berdasarkan ID.",
+        "url": {
+          "raw": "{{base_url}}/api/kader/{{kader_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "kader",
+            "{{kader_id}}"
+          ]
+        }
+      }
+    }
+  ]
+}
