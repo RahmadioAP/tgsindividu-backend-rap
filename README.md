@@ -12,7 +12,7 @@ REST API dibuat untuk tabel **kader**.
 - Database: Neon PostgreSQL (database `posyandubackend`)
 
 ## Teknologi
-Node.js (ES Modules), Express 5, PostgreSQL (`pg`), Zod (validasi), Nodemon.
+Node.js 18.11+ (ES Modules), Express 5, PostgreSQL (`pg`), Zod (validasi).
 
 ## Struktur
 ```
@@ -32,12 +32,12 @@ postman/           koleksi Postman (import langsung)
 - Many to Many: `pemeriksaan` — `jenis_layanan` (via `pemeriksaan_layanan`), `jadwal_kegiatan` — `kader` (via `jadwal_kader`)
 
 ## Cara menjalankan
-1. `npm install`
+1. `npm install` (wajib dijalankan sekali, karena folder `node_modules` tidak ikut di repo)
 2. Buka Neon Console > SQL Editor (database `posyandubackend`), tempel seluruh isi `db.sql`, lalu Run.
    (Untuk PostgreSQL lokal: buat database kosong lalu jalankan `db.sql` lewat psql/pgAdmin.)
 3. Salin `.env.example` menjadi `.env`, lalu isi `DATABASE_URL` dengan connection string Neon
    (Neon Console > Connect). File `.env` tidak boleh di-push (sudah ada di `.gitignore`).
-4. `npm run dev` (atau `npm start`) → http://localhost:8000
+4. `npm run dev` (auto-restart saat file berubah, memakai `node --watch`) atau `npm start` → http://localhost:8000
 
 ## Endpoint
 | Method | URL | Keterangan |
